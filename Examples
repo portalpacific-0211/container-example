@@ -1,0 +1,34 @@
+// How simple container resolves dependency
+
+class LogToDatabase
+{
+    public function execute($message)
+    {
+        var_dump('log the message to a database: ' . $message);
+    }
+}
+
+class UsersController
+{
+    protected $logger;
+
+    public function __construct(LogToDatabase $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    public function show()
+    {
+        $user = 'JohnDoe';
+        $this->logger->execute($user);
+    }
+}
+
+
+// Here bind dependency
+SimpleContainer::bind('Foo', function() {
+    return new UsersController(new LogToDatabase);
+});
+
+$foo = SimpleContainer::make('Foo');
+$foo->show();
